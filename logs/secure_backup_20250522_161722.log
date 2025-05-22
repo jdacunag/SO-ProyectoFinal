@@ -1,0 +1,6 @@
+2025-05-22 16:17:22,951 - secure_backup - INFO - Escaneando directorio: test_data/docs
+2025-05-22 16:17:22,953 - secure_backup - INFO - Encontrados 2 archivos en test_data/docs
+2025-05-22 16:17:23,112 - secure_backup - INFO - Total de archivos encontrados: 2
+2025-05-22 16:17:23,113 - secure_backup - INFO - Comprimiendo 2 archivos con zip
+2025-05-22 16:17:24,884 - secure_backup - INFO - Compresión ZIP completada: backup.zip
+2025-05-22 16:17:25,227 - secure_backup - INFO - Almacenando archivo en destino local: backup.zip

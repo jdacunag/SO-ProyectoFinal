@@ -1,0 +1,32 @@
+# requirements-minimal.txt
+# Dependencias mínimas para funcionalidad básica
+
+# ===========================
+# CORE ESENCIAL
+# ===========================
+
+# Paralelismo con Dask
+dask[complete]>=2023.5.0
+distributed>=2023.5.0
+
+# Encriptación
+cryptography>=41.0.0
+
+# Interfaz de usuario
+tqdm>=4.64.0
+
+# Configuración
+python-dotenv>=1.0.0
+
+# ===========================
+# DEPENDENCIAS IMPLÍCITAS
+# ===========================
+
+# NumPy (requerido por Dask)
+numpy>=1.24.0
+
+# Pandas (requerido por Dask)
+pandas>=2.0.0
+
+# Requests (para operaciones web)
+requests>=2.31.0
