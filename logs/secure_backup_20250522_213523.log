@@ -1,0 +1,9 @@
+2025-05-22 21:35:24,349 - secure_backup - INFO - Total de archivos encontrados: 2
+2025-05-22 21:35:24,350 - secure_backup - INFO - Comprimiendo 2 archivos con zip
+2025-05-22 21:35:24,542 - secure_backup - INFO - Procesando 2 archivos con Dask
+2025-05-22 21:35:24,543 - secure_backup - INFO - Compresión ZIP completada: backups\test_clean.zip
+2025-05-22 21:35:24,544 - secure_backup - INFO - Aplicando encriptación AES-256 al archivo comprimido...
+2025-05-22 21:35:24,564 - secure_backup - INFO - Encriptando archivo: backups\test_clean.zip
+2025-05-22 21:35:24,632 - secure_backup - INFO - Archivo encriptado guardado en: backups\test_clean.zip.enc
+2025-05-22 21:35:24,633 - secure_backup - INFO - Archivo sin encriptar eliminado: backups\test_clean.zip
+2025-05-22 21:35:24,633 - secure_backup - INFO - Encriptación completada: backups\test_clean.zip.enc

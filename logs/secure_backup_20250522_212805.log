@@ -1,0 +1,9 @@
+2025-05-22 21:28:05,235 - secure_backup - INFO - Restaurando backup desde: backups\multi_encrypted.zip.enc
+2025-05-22 21:28:05,236 - secure_backup - INFO - Desencriptando archivo: backups\multi_encrypted.zip.enc
+2025-05-22 21:28:05,237 - secure_backup - INFO - Desencriptando archivo: backups\multi_encrypted.zip.enc
+2025-05-22 21:28:06,086 - secure_backup - INFO - Archivo desencriptado guardado en: C:\Users\verov\AppData\Local\Temp\tmpzk2q70wk.zip
+2025-05-22 21:28:06,087 - secure_backup - INFO - Archivo desencriptado guardado en: C:\Users\verov\AppData\Local\Temp\tmpzk2q70wk.zip
+2025-05-22 21:28:06,089 - secure_backup - INFO - Restaurando backup desde: C:\Users\verov\AppData\Local\Temp\tmpzk2q70wk.zip
+2025-05-22 21:28:06,089 - secure_backup - INFO - Restaurando archivo ZIP: C:\Users\verov\AppData\Local\Temp\tmpzk2q70wk.zip
+2025-05-22 21:28:06,095 - secure_backup - INFO - Backup ZIP restaurado en: restored\multi_test
+2025-05-22 21:28:06,096 - secure_backup - INFO - Archivo temporal eliminado: C:\Users\verov\AppData\Local\Temp\tmpzk2q70wk.zip

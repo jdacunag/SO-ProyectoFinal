@@ -10,12 +10,29 @@ import gzip
 import bz2
 import dask.bag as db
 from dask.distributed import Client
+import logging
 from src.utils import logger
 
+# Silenciar logs verbosos de Dask y dependencias
+logging.getLogger('distributed').setLevel(logging.ERROR)
+logging.getLogger('distributed.worker').setLevel(logging.ERROR)
+logging.getLogger('distributed.scheduler').setLevel(logging.ERROR)
+logging.getLogger('distributed.nanny').setLevel(logging.ERROR)
+logging.getLogger('distributed.http.proxy').setLevel(logging.ERROR)
+logging.getLogger('distributed.core').setLevel(logging.ERROR)
+logging.getLogger('distributed.batched').setLevel(logging.ERROR)
+logging.getLogger('tornado').setLevel(logging.ERROR)
+
 def create_client(workers):
-    """Crea un cliente Dask para paralelismo"""
+    """Crea un cliente Dask para paralelismo con logs silenciados"""
     try:
-        return Client(n_workers=workers, threads_per_worker=2, silence_logs=False)
+        return Client(
+            n_workers=workers, 
+            threads_per_worker=2, 
+            silence_logs=True,
+            dashboard_address=None,  # Deshabilitar dashboard
+            processes=False  # Usar threads en lugar de procesos para menos overhead
+        )
     except:
         logger.get_logger().warning("No se pudo crear cliente Dask, usando procesamiento secuencial")
         return None

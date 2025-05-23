@@ -1,0 +1,9 @@
+2025-05-22 21:27:47,311 - secure_backup - INFO - Total de archivos encontrados: 8
+2025-05-22 21:27:47,312 - secure_backup - INFO - Comprimiendo 8 archivos con zip
+2025-05-22 21:27:49,164 - secure_backup - INFO - Procesando 8 archivos con Dask
+2025-05-22 21:27:49,169 - secure_backup - INFO - Compresión ZIP completada: backups\multi_encrypted.zip
+2025-05-22 21:27:49,170 - secure_backup - INFO - Aplicando encriptación AES-256 al archivo comprimido...
+2025-05-22 21:27:49,192 - secure_backup - INFO - Encriptando archivo: backups\multi_encrypted.zip
+2025-05-22 21:27:49,351 - secure_backup - INFO - Archivo encriptado guardado en: backups\multi_encrypted.zip.enc
+2025-05-22 21:27:49,352 - secure_backup - INFO - Archivo sin encriptar eliminado: backups\multi_encrypted.zip
+2025-05-22 21:27:49,353 - secure_backup - INFO - Encriptación completada: backups\multi_encrypted.zip.enc

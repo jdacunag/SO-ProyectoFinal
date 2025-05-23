@@ -8,6 +8,7 @@ import gzip
 import bz2
 import shutil
 import tarfile
+import tempfile
 from pathlib import Path
 import dask.bag as db
 from src.utils import logger
@@ -37,16 +38,27 @@ def restore_backup(backup_path, output_dir, password=None):
             if not password:
                 raise ValueError("Se requiere contraseña para restaurar un backup encriptado")
             
-            # Desencriptar primero
-            temp_file = backup_path.with_suffix('.tmp')
-            encryptor.decrypt_file(str(backup_path), str(temp_file), password)
+            logger.get_logger().info(f"Desencriptando archivo: {backup_path}")
             
-            # Determinar el tipo y restaurar
-            result = restore_backup(temp_file, output_dir)
+            # Desencriptar a archivo temporal con extensión .zip
+            with tempfile.NamedTemporaryFile(suffix='.zip', delete=False) as temp_file:
+                temp_zip_path = temp_file.name
             
-            # Limpiar archivo temporal
-            os.unlink(temp_file)
-            return result
+            try:
+                encryptor.decrypt_file(str(backup_path), temp_zip_path, password)
+                logger.get_logger().info(f"Archivo desencriptado guardado en: {temp_zip_path}")
+                
+                # Determinar el tipo y restaurar
+                result = restore_backup(temp_zip_path, output_dir)
+                
+                return result
+            finally:
+                # Limpiar archivo temporal
+                try:
+                    os.unlink(temp_zip_path)
+                    logger.get_logger().info(f"Archivo temporal eliminado: {temp_zip_path}")
+                except:
+                    pass  # Ignorar errores de limpieza
             
         elif extension == '.zip':
             return restore_zip(backup_path, output_dir, password)

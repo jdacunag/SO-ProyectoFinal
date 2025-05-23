@@ -1,0 +1,4 @@
+2025-05-22 21:27:47,275 - secure_backup - INFO - Escaneando directorio: src/utils
+2025-05-22 21:27:47,275 - secure_backup - INFO - Encontrados 6 archivos en src/utils
+2025-05-22 21:27:47,276 - secure_backup - INFO - Escaneando directorio: test_data/docs
+2025-05-22 21:27:47,276 - secure_backup - INFO - Encontrados 2 archivos en test_data/docs
