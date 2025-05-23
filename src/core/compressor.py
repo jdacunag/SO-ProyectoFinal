@@ -1,5 +1,6 @@
 """
 Compressor - Módulo para comprimir archivos usando algoritmos clásicos con paralelismo
+ACTUALIZADO: Manejo correcto de fragmentación y rutas
 """
 
 import os
@@ -51,30 +52,48 @@ def compress_file_zip(file_info):
 def compress_files(files, algorithm='zip', output=None, encrypt=False, password=None, workers=4):
     """
     Comprime la lista de archivos utilizando el algoritmo especificado y paralelismo con Dask
-    Con soporte completo para encriptación integrada
+    Con soporte completo para encriptación integrada y mejor manejo de rutas
     """
     if not output:
         output = f"backup.{algorithm}"
     
-    # Verificar si la salida es un directorio o un archivo
-    output_path = Path(output)
-    if output_path.suffix == '':  # Es un directorio
-        os.makedirs(output_path, exist_ok=True)
-    else:  # Es un archivo
-        os.makedirs(output_path.parent, exist_ok=True)
+    # Resolver rutas absolutas para evitar conflictos
+    output_path = Path(output).resolve()
+    
+    # Verificar si algún archivo de entrada coincide con la salida
+    files_absolute = [Path(f).resolve() for f in files]
+    for file_path in files_absolute:
+        if file_path == output_path:
+            logger.get_logger().error(f"Error: El archivo de salida no puede ser el mismo que uno de entrada: {file_path}")
+            raise ValueError(f"Conflicto de rutas: '{file_path}' no puede ser origen y destino")
+    
+    # MANEJO ESPECIAL PARA FRAGMENTACIÓN
+    # Si el output no tiene extensión, asumimos que es para fragmentación
+    if output_path.suffix == '':
+        # Para fragmentación, crear un archivo temporal
+        temp_dir = tempfile.mkdtemp(prefix="backup_compress_")
+        temp_filename = f"{output_path.name}.{algorithm}"
+        actual_output_path = Path(temp_dir) / temp_filename
+        logger.get_logger().info(f"Modo fragmentación detectado. Usando archivo temporal: {actual_output_path}")
+    else:
+        # Es un archivo normal
+        actual_output_path = output_path
+        # Crear directorio padre si no existe
+        os.makedirs(actual_output_path.parent, exist_ok=True)
     
     logger.get_logger().info(f"Comprimiendo {len(files)} archivos con {algorithm}")
+    logger.get_logger().info(f"Archivo de salida: {actual_output_path}")
     
     # Crear cliente Dask para paralelismo
     client = create_client(workers)
     
     try:
         if algorithm == 'zip':
-            compressed_file = compress_zip_parallel(files, str(output_path), client, encrypt, password)
+            compressed_file = compress_zip_parallel(files, str(actual_output_path), client, encrypt, password)
         elif algorithm == 'gzip':
-            compressed_file = compress_gzip_parallel(files, str(output_path), client)
+            compressed_file = compress_gzip_parallel(files, str(actual_output_path), client)
         elif algorithm == 'bzip2':
-            compressed_file = compress_bzip2_parallel(files, str(output_path), client)
+            compressed_file = compress_bzip2_parallel(files, str(actual_output_path), client)
         else:
             logger.get_logger().error(f"Algoritmo no soportado: {algorithm}")
             return None
@@ -85,18 +104,22 @@ def compress_files(files, algorithm='zip', output=None, encrypt=False, password=
             from src.core import encryptor
             
             # Determinar nombre del archivo encriptado
-            if not output.endswith('.enc'):
-                encrypted_output = compressed_file + '.enc'
+            compressed_path = Path(compressed_file)
+            if not compressed_path.name.endswith('.enc'):
+                encrypted_output = str(compressed_path) + '.enc'
             else:
-                encrypted_output = compressed_file
+                encrypted_output = str(compressed_path)
             
             # Encriptar el archivo comprimido
             encryptor.encrypt_file(compressed_file, encrypted_output, password)
             
             # Eliminar archivo sin encriptar si es diferente
             if compressed_file != encrypted_output:
-                os.remove(compressed_file)
-                logger.get_logger().info(f"Archivo sin encriptar eliminado: {compressed_file}")
+                try:
+                    os.remove(compressed_file)
+                    logger.get_logger().info(f"Archivo sin encriptar eliminado: {compressed_file}")
+                except:
+                    logger.get_logger().warning(f"No se pudo eliminar archivo temporal: {compressed_file}")
             
             logger.get_logger().info(f"Encriptación completada: {encrypted_output}")
             return encrypted_output
@@ -109,86 +132,162 @@ def compress_files(files, algorithm='zip', output=None, encrypt=False, password=
             client.close()
 
 def compress_zip_parallel(files, output_path, client, encrypt=False, password=None):
-    """Comprime archivos usando ZIP con paralelismo"""
+    """Comprime archivos usando ZIP con paralelismo y mejor manejo de rutas"""
     
-    # Calcular directorio base común
-    if files:
-        base_dir = os.path.commonpath(files)
+    # Resolver rutas absolutas
+    output_abs = Path(output_path).resolve()
+    files_abs = [Path(f).resolve() for f in files]
+    
+    # Verificar conflictos de rutas
+    for file_path in files_abs:
+        if file_path == output_abs:
+            raise ValueError(f"Error: '{file_path}' no puede ser archivo de entrada y salida")
+    
+    # Asegurar que el directorio padre existe
+    os.makedirs(output_abs.parent, exist_ok=True)
+    
+    # Calcular directorio base común para rutas relativas
+    if files_abs:
+        try:
+            # Intentar encontrar directorio común
+            common_parts = []
+            first_parts = files_abs[0].parts
+            
+            for i, part in enumerate(first_parts):
+                if all(len(f.parts) > i and f.parts[i] == part for f in files_abs):
+                    common_parts.append(part)
+                else:
+                    break
+            
+            if common_parts:
+                base_dir = Path(*common_parts)
+            else:
+                base_dir = Path.cwd()
+        except:
+            base_dir = Path.cwd()
     else:
-        base_dir = ""
+        base_dir = Path.cwd()
     
-    # Crear archivo ZIP inicial
-    with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        pass  # Solo crear el archivo
+    logger.get_logger().info(f"Directorio base para rutas relativas: {base_dir}")
     
-    if client:
-        # Preparar información para cada archivo
-        file_infos = []
-        for file_path in files:
-            rel_path = os.path.relpath(file_path, base_dir) if base_dir else os.path.basename(file_path)
-            file_infos.append((file_path, output_path, rel_path))
-        
-        # Procesar en paralelo (simulado - en realidad ZIP no se puede escribir concurrentemente)
-        logger.get_logger().info(f"Procesando {len(file_infos)} archivos con Dask")
-        
-        # Por limitaciones de ZIP, procesamos secuencialmente pero con estructura Dask
-        with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            for file_path, _, rel_path in file_infos:
+    # Crear archivo ZIP
+    try:
+        with zipfile.ZipFile(output_abs, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for file_path in files_abs:
                 try:
+                    # Calcular ruta relativa
+                    try:
+                        rel_path = file_path.relative_to(base_dir)
+                    except ValueError:
+                        # Si no se puede calcular relativa, usar solo el nombre
+                        rel_path = file_path.name
+                    
+                    logger.get_logger().debug(f"Agregando: {file_path} -> {rel_path}")
                     zipf.write(file_path, rel_path)
+                    
                 except Exception as e:
                     logger.get_logger().error(f"Error agregando {file_path}: {e}")
-    else:
-        # Fallback secuencial
-        with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            for file_path in files:
-                try:
-                    rel_path = os.path.relpath(file_path, base_dir) if base_dir else os.path.basename(file_path)
-                    zipf.write(file_path, rel_path)
-                except Exception as e:
-                    logger.get_logger().error(f"Error agregando {file_path}: {e}")
+                    continue
     
-    logger.get_logger().info(f"Compresión ZIP completada: {output_path}")
-    return output_path
+    except Exception as e:
+        logger.get_logger().error(f"Error creando archivo ZIP: {e}")
+        raise
+    
+    logger.get_logger().info(f"Compresión ZIP completada: {output_abs}")
+    return str(output_abs)
 
 def compress_gzip_parallel(files, output_path, client):
     """Comprime archivos usando GZIP (tar.gz) con paralelismo"""
     import tarfile
     
     # Para GZIP múltiples archivos, usar tar.gz
-    if not output_path.endswith('.tar.gz'):
-        output_path = output_path.replace('.gz', '.tar.gz')
+    output_path = Path(output_path)
+    if not str(output_path).endswith('.tar.gz'):
+        if output_path.suffix == '.gz':
+            output_path = output_path.with_suffix('.tar.gz')
+        else:
+            output_path = output_path.with_suffix(output_path.suffix + '.tar.gz')
     
-    base_dir = os.path.commonpath(files) if files else ""
+    # Resolver rutas absolutas
+    output_abs = output_path.resolve()
+    files_abs = [Path(f).resolve() for f in files]
     
-    with tarfile.open(output_path, 'w:gz') as tar:
-        for file_path in files:
+    # Verificar conflictos
+    for file_path in files_abs:
+        if file_path == output_abs:
+            raise ValueError(f"Error: '{file_path}' no puede ser archivo de entrada y salida")
+    
+    # Asegurar directorio padre
+    os.makedirs(output_abs.parent, exist_ok=True)
+    
+    # Calcular directorio base común
+    if files_abs:
+        try:
+            base_dir = Path(os.path.commonpath([str(f) for f in files_abs]))
+        except ValueError:
+            base_dir = Path.cwd()
+    else:
+        base_dir = Path.cwd()
+    
+    with tarfile.open(output_abs, 'w:gz') as tar:
+        for file_path in files_abs:
             try:
-                rel_path = os.path.relpath(file_path, base_dir) if base_dir else os.path.basename(file_path)
+                try:
+                    rel_path = file_path.relative_to(base_dir)
+                except ValueError:
+                    rel_path = file_path.name
+                
                 tar.add(file_path, arcname=rel_path)
             except Exception as e:
                 logger.get_logger().error(f"Error agregando {file_path}: {e}")
     
-    logger.get_logger().info(f"Compresión GZIP completada: {output_path}")
-    return output_path
+    logger.get_logger().info(f"Compresión GZIP completada: {output_abs}")
+    return str(output_abs)
 
 def compress_bzip2_parallel(files, output_path, client):
     """Comprime archivos usando BZIP2 (tar.bz2) con paralelismo"""
     import tarfile
     
     # Para BZIP2 múltiples archivos, usar tar.bz2
-    if not output_path.endswith('.tar.bz2'):
-        output_path = output_path.replace('.bz2', '.tar.bz2')
+    output_path = Path(output_path)
+    if not str(output_path).endswith('.tar.bz2'):
+        if output_path.suffix == '.bz2':
+            output_path = output_path.with_suffix('.tar.bz2')
+        else:
+            output_path = output_path.with_suffix(output_path.suffix + '.tar.bz2')
     
-    base_dir = os.path.commonpath(files) if files else ""
+    # Resolver rutas absolutas
+    output_abs = output_path.resolve()
+    files_abs = [Path(f).resolve() for f in files]
     
-    with tarfile.open(output_path, 'w:bz2') as tar:
-        for file_path in files:
+    # Verificar conflictos
+    for file_path in files_abs:
+        if file_path == output_abs:
+            raise ValueError(f"Error: '{file_path}' no puede ser archivo de entrada y salida")
+    
+    # Asegurar directorio padre
+    os.makedirs(output_abs.parent, exist_ok=True)
+    
+    # Calcular directorio base común
+    if files_abs:
+        try:
+            base_dir = Path(os.path.commonpath([str(f) for f in files_abs]))
+        except ValueError:
+            base_dir = Path.cwd()
+    else:
+        base_dir = Path.cwd()
+    
+    with tarfile.open(output_abs, 'w:bz2') as tar:
+        for file_path in files_abs:
             try:
-                rel_path = os.path.relpath(file_path, base_dir) if base_dir else os.path.basename(file_path)
+                try:
+                    rel_path = file_path.relative_to(base_dir)
+                except ValueError:
+                    rel_path = file_path.name
+                
                 tar.add(file_path, arcname=rel_path)
             except Exception as e:
                 logger.get_logger().error(f"Error agregando {file_path}: {e}")
     
-    logger.get_logger().info(f"Compresión BZIP2 completada: {output_path}")
-    return output_path
+    logger.get_logger().info(f"Compresión BZIP2 completada: {output_abs}")
+    return str(output_abs)

@@ -1,8 +1,3 @@
-"""
-Storage - Módulo mejorado para gestionar todas las opciones de almacenamiento
-src/core/storage.py (REEMPLAZA EL ARCHIVO EXISTENTE)
-"""
-
 import os
 import shutil
 from pathlib import Path
@@ -184,15 +179,8 @@ def fragment_file(source_file, fragment_size_mb=1024, output_dir=None):
     try:
         from src.utils.rebuild_generator import create_rebuild_scripts
         create_rebuild_scripts(output_dir, metadata)
-        logger.get_logger().info("✅ Scripts de reconstrucción creados")
     except ImportError:
-        logger.get_logger().warning("⚠️  Módulo de scripts de reconstrucción no disponible")
-        # Crear un script básico como fallback
-        _create_basic_rebuild_script(output_dir, metadata)
-    except Exception as e:
-        logger.get_logger().error(f"Error creando scripts de reconstrucción: {e}")
-        # Crear un script básico como fallback
-        _create_basic_rebuild_script(output_dir, metadata)
+        logger.get_logger().warning("Módulo de scripts de reconstrucción no disponible")
     
     logger.get_logger().info(f"✅ Archivo fragmentado en {num_fragments} fragmentos en: {output_dir}")
     
@@ -206,72 +194,6 @@ def fragment_file(source_file, fragment_size_mb=1024, output_dir=None):
     print(f"   📏 Tamaño total: {total_fragment_size/1024/1024:.2f}MB")
     
     return str(output_dir)
-
-def _create_basic_rebuild_script(output_dir, metadata):
-    """Crea un script básico de reconstrucción como fallback"""
-    original_stem = Path(metadata['original_file']).stem
-    
-    basic_script = f'''#!/usr/bin/env python3
-"""
-Script básico de reconstitución
-Generado por Sistema de Backup Seguro
-"""
-
-import os
-import json
-from pathlib import Path
-
-def rebuild_file():
-    metadata_file = "{original_stem}.metadata.json"
-    
-    if not os.path.exists(metadata_file):
-        print(f"❌ Archivo de metadatos no encontrado: {{metadata_file}}")
-        return False
-    
-    with open(metadata_file, 'r') as f:
-        metadata = json.load(f)
-    
-    original_name = Path(metadata['original_file']).name
-    fragments = metadata['fragments']
-    
-    print(f"🔧 Reconstruyendo: {{original_name}}")
-    print(f"📊 Fragmentos: {{len(fragments)}}")
-    
-    # Verificar fragmentos
-    missing = [name for name in fragments.keys() if not os.path.exists(name)]
-    if missing:
-        print(f"❌ Fragmentos faltantes: {{missing}}")
-        return False
-    
-    # Reconstruir
-    with open(original_name, 'wb') as output_file:
-        for i in range(len(fragments)):
-            fragment_name = f"{{Path(metadata['original_file']).stem}}.part{{i:03d}}"
-            print(f"📄 Procesando: {{fragment_name}}")
-            
-            with open(fragment_name, 'rb') as fragment_file:
-                output_file.write(fragment_file.read())
-    
-    print(f"✅ Archivo reconstruido: {{original_name}}")
-    return True
-
-if __name__ == "__main__":
-    print("🔧 Script de Reconstitución Básico")
-    print("=" * 40)
-    if rebuild_file():
-        print("🎉 ¡Reconstitución exitosa!")
-    else:
-        print("💥 Error en la reconstitución")
-'''
-    
-    script_path = output_dir / "rebuild.py"
-    with open(script_path, 'w', encoding='utf-8') as f:
-        f.write(basic_script)
-    
-    try:
-        os.chmod(script_path, 0o755)
-    except:
-        pass
 
 def _get_drive_info(path):
     """Obtiene información del drive/dispositivo"""

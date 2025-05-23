@@ -1,4 +1,5 @@
 import sys
+import time
 from functools import wraps
 from src.utils import logger
 
@@ -22,6 +23,10 @@ class RestoreError(BackupError):
     """Error durante la restauración"""
     pass
 
+class CloudError(BackupError):
+    """Error en operaciones de nube"""
+    pass
+
 def handle_error(func):
     """
     Decorador para manejar errores de forma consistente
@@ -40,7 +45,7 @@ def handle_error(func):
     
     return wrapper
 
-def retry(max_attempts=3, exceptions=(Exception,)):
+def retry(max_attempts=3, exceptions=(Exception,), delay=1.0):
     """
     Decorador para reintentar una función en caso de error
     """
@@ -56,6 +61,8 @@ def retry(max_attempts=3, exceptions=(Exception,)):
                     logger.get_logger().warning(
                         f"Intento {attempt+1}/{max_attempts} fallido: {str(e)}"
                     )
+                    if attempt < max_attempts - 1:  # No esperar en el último intento
+                        time.sleep(delay)
             
             # Si llegamos aquí, todos los intentos fallaron
             raise last_exception
@@ -69,7 +76,7 @@ def safe_cloud_operation(operation_func):
     Decorador específico para operaciones en la nube, manejando problemas de conexión
     """
     @wraps(operation_func)
-    @retry(max_attempts=3, exceptions=(ConnectionError, TimeoutError))
+    @retry(max_attempts=3, exceptions=(ConnectionError, TimeoutError), delay=2.0)
     def wrapper(*args, **kwargs):
         try:
             return operation_func(*args, **kwargs)
@@ -82,5 +89,29 @@ def safe_cloud_operation(operation_func):
         except Exception as e:
             logger.get_logger().error(f"Error en operación en la nube: {str(e)}")
             raise StorageError(f"Error en almacenamiento en la nube: {str(e)}")
+    
+    return wrapper
+
+def safe_file_operation(operation_func):
+    """
+    Decorador para operaciones de archivos con manejo robusto
+    """
+    @wraps(operation_func)
+    def wrapper(*args, **kwargs):
+        try:
+            return operation_func(*args, **kwargs)
+        except PermissionError as e:
+            logger.get_logger().error(f"Error de permisos: {str(e)}")
+            raise StorageError(f"Sin permisos para acceder al archivo: {str(e)}")
+        except OSError as e:
+            if "No space left" in str(e).lower():
+                logger.get_logger().error("Espacio insuficiente en dispositivo")
+                raise StorageError("Espacio insuficiente en el dispositivo de destino")
+            else:
+                logger.get_logger().error(f"Error del sistema: {str(e)}")
+                raise StorageError(f"Error del sistema: {str(e)}")
+        except FileNotFoundError as e:
+            logger.get_logger().error(f"Archivo no encontrado: {str(e)}")
+            raise StorageError(f"Archivo no encontrado: {str(e)}")
     
     return wrapper

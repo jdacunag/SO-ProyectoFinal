@@ -1,0 +1,8 @@
+2025-05-23 14:48:23,692 - secure_backup - INFO - Escaneando directorio: test_data/docs
+2025-05-23 14:48:23,693 - secure_backup - INFO - Encontrados 2 archivos en test_data/docs
+2025-05-23 14:48:23,769 - secure_backup - INFO - Total de archivos encontrados: 2
+2025-05-23 14:48:23,777 - secure_backup - INFO - Comprimiendo 2 archivos con zip
+2025-05-23 14:48:23,921 - secure_backup - INFO - Procesando 2 archivos con Dask
+2025-05-23 14:48:23,925 - secure_backup - INFO - Compresión ZIP completada: /tmp/backup_temp_icpozdci/backup_temp.zip
+2025-05-23 14:48:23,951 - secure_backup - INFO - Almacenando archivo en destino local: ./backups/backup.zip
+2025-05-23 14:48:23,954 - secure_backup - INFO - Archivo almacenado correctamente en: ./backups/backup.zip

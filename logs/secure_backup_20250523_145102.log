@@ -1,0 +1,4 @@
+2025-05-23 14:51:02,326 - secure_backup - INFO - Escaneando directorio: test_data/docs
+2025-05-23 14:51:02,329 - secure_backup - INFO - Encontrados 2 archivos en test_data/docs
+2025-05-23 14:51:02,412 - secure_backup - INFO - Total de archivos encontrados: 2
+2025-05-23 14:51:02,416 - secure_backup - INFO - Comprimiendo 2 archivos con zip

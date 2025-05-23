@@ -1,0 +1,15 @@
+{
+  "original_file": "/tmp/backup_compress_oa_is3o5/backup.zip",
+  "file_size": 236,
+  "fragment_size": 524288000,
+  "fragment_size_mb": 500,
+  "num_fragments": 1,
+  "created_by": "Sistema de Backup Seguro v1.0",
+  "fragments": {
+    "backup.part000": {
+      "size": 236,
+      "checksum": "0a76a5e5b6f8bf64f1fb51c30ed133b0",
+      "index": 0
+    }
+  }
+}
