@@ -1,0 +1,5 @@
+2025-05-22 21:20:38,404 - secure_backup - INFO - Restaurando backup desde: backups\nuevo_test.zip.enc
+2025-05-22 21:20:38,405 - secure_backup - INFO - Desencriptando archivo: backups\nuevo_test.zip.enc
+2025-05-22 21:20:39,209 - secure_backup - INFO - Archivo desencriptado guardado en: backups\nuevo_test.zip.tmp
+2025-05-22 21:20:39,209 - secure_backup - INFO - Restaurando backup desde: backups\nuevo_test.zip.tmp
+2025-05-22 21:20:39,210 - secure_backup - ERROR - Formato de backup no soportado: .tmp

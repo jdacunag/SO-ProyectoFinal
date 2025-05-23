@@ -1,0 +1,4 @@
+2025-05-22 21:09:09,143 - secure_backup - INFO - Total de archivos encontrados: 8
+2025-05-22 21:09:09,144 - secure_backup - INFO - Comprimiendo 8 archivos con zip
+2025-05-22 21:09:11,029 - secure_backup - INFO - Procesando 8 archivos con Dask
+2025-05-22 21:09:11,091 - secure_backup - INFO - Compresión ZIP completada: backups\backup_multiple.zip

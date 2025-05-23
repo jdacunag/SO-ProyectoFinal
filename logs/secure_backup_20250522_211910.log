@@ -1,0 +1,5 @@
+2025-05-22 21:19:10,704 - secure_backup - INFO - Restaurando backup desde: backups\test_encryption.zip.enc
+2025-05-22 21:19:10,704 - secure_backup - INFO - Desencriptando archivo: backups\test_encryption.zip.enc
+2025-05-22 21:19:11,513 - secure_backup - INFO - Archivo desencriptado guardado en: backups\test_encryption.zip.tmp
+2025-05-22 21:19:11,513 - secure_backup - INFO - Restaurando backup desde: backups\test_encryption.zip.tmp
+2025-05-22 21:19:11,514 - secure_backup - ERROR - Formato de backup no soportado: .tmp

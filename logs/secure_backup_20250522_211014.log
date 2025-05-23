@@ -1,0 +1,8 @@
+2025-05-22 21:10:14,416 - secure_backup - INFO - Escaneando directorio: test_data/images
+2025-05-22 21:10:14,417 - secure_backup - INFO - Encontrados 1 archivos en test_data/images
+2025-05-22 21:10:14,418 - secure_backup - INFO - Escaneando directorio: test_data/docs
+2025-05-22 21:10:14,418 - secure_backup - INFO - Encontrados 2 archivos en test_data/docs
+2025-05-22 21:10:14,449 - secure_backup - INFO - Total de archivos encontrados: 3
+2025-05-22 21:10:14,450 - secure_backup - INFO - Comprimiendo 3 archivos con zip
+2025-05-22 21:10:16,356 - secure_backup - INFO - Procesando 3 archivos con Dask
+2025-05-22 21:10:16,375 - secure_backup - INFO - Compresión ZIP completada: backups\backup_multiple.zip

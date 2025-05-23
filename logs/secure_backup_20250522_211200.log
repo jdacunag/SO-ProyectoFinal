@@ -1,0 +1,13 @@
+2025-05-22 21:12:00,574 - secure_backup - INFO - Escaneando directorio: test_data/images
+2025-05-22 21:12:00,575 - secure_backup - INFO - Encontrados 1 archivos en test_data/images
+2025-05-22 21:12:00,576 - secure_backup - INFO - Escaneando directorio: test_data/docs
+2025-05-22 21:12:00,576 - secure_backup - INFO - Encontrados 2 archivos en test_data/docs
+2025-05-22 21:12:00,612 - secure_backup - INFO - Total de archivos encontrados: 3
+2025-05-22 21:12:00,612 - secure_backup - INFO - Comprimiendo 3 archivos con zip
+2025-05-22 21:12:02,430 - secure_backup - INFO - Procesando 3 archivos con Dask
+2025-05-22 21:12:02,443 - secure_backup - INFO - Compresión ZIP completada: backups\backup_multi_encrypted.zip
+2025-05-22 21:12:02,443 - secure_backup - INFO - Aplicando encriptación AES-256 al archivo comprimido...
+2025-05-22 21:12:02,734 - secure_backup - INFO - Encriptando archivo: backups\backup_multi_encrypted.zip
+2025-05-22 21:12:02,892 - secure_backup - INFO - Archivo encriptado guardado en: backups\backup_multi_encrypted.zip.enc
+2025-05-22 21:12:02,893 - secure_backup - INFO - Archivo sin encriptar eliminado: backups\backup_multi_encrypted.zip
+2025-05-22 21:12:02,894 - secure_backup - INFO - Encriptación completada: backups\backup_multi_encrypted.zip.enc

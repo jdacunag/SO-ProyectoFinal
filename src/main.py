@@ -34,13 +34,13 @@ def create_parser():
     # COMANDO BACKUP
     backup_parser = subparsers.add_parser('backup', help='Crear un backup')
     backup_parser.add_argument('-d', '--directories', nargs='+', required=True,
-                              help='Directorios a incluir en el backup')
+                              help='Directorios a incluir en el backup (múltiples carpetas soportadas)')
     backup_parser.add_argument('-o', '--output', required=True,
                               help='Archivo de salida')
     backup_parser.add_argument('-a', '--algorithm', choices=['zip', 'gzip', 'bzip2'],
                               default='zip', help='Algoritmo de compresión')
     backup_parser.add_argument('-e', '--encrypt', action='store_true',
-                              help='Encriptar el backup')
+                              help='Encriptar el backup con AES-256')
     backup_parser.add_argument('--password', help='Contraseña para encriptación')
     backup_parser.add_argument('-s', '--storage', choices=['local', 'cloud', 'fragments'],
                               default='local', help='Modo de almacenamiento')
@@ -82,6 +82,33 @@ def create_output_directory(output_path):
             return False
     return True
 
+def validate_and_get_password(encrypt, current_password=None):
+    """Valida y obtiene la contraseña para encriptación con confirmación"""
+    if not encrypt:
+        return None
+    
+    if current_password:
+        # Validar longitud mínima
+        if len(current_password) < 8:
+            print("Error: La contraseña debe tener al menos 8 caracteres.")
+            return None
+        return current_password
+    
+    # Solicitar contraseña con confirmación
+    while True:
+        password1 = getpass.getpass("Ingrese contraseña para encriptación (mín. 8 caracteres): ")
+        
+        if len(password1) < 8:
+            print("Error: La contraseña debe tener al menos 8 caracteres. Intente nuevamente.")
+            continue
+        
+        password2 = getpass.getpass("Confirme la contraseña: ")
+        
+        if password1 == password2:
+            return password1
+        else:
+            print("Error: Las contraseñas no coinciden. Intente nuevamente.")
+
 def handle_backup(args):
     """Maneja el comando backup"""
     
@@ -95,11 +122,11 @@ def handle_backup(args):
     if not create_output_directory(args.output):
         return False
     
-    # Manejar encriptación
-    if args.encrypt and not args.password:
-        args.password = getpass.getpass("Ingrese contraseña para encriptación: ")
+    # Manejar encriptación con validación mejorada
+    if args.encrypt:
+        args.password = validate_and_get_password(args.encrypt, args.password)
         if not args.password:
-            print("Error: Se requiere contraseña para encriptación")
+            print("Error: Se requiere una contraseña válida para encriptación")
             return False
     
     # Mostrar información
@@ -107,21 +134,21 @@ def handle_backup(args):
         print(f"Directorios a respaldar: {', '.join(args.directories)}")
         print(f"Archivo de salida: {args.output}")
         print(f"Algoritmo: {args.algorithm}")
-        print(f"Encriptación: {'SI' if args.encrypt else 'NO'}")
+        print(f"Encriptación: {'SI (AES-256)' if args.encrypt else 'NO'}")
         print(f"Almacenamiento: {args.storage}")
         print(f"Workers: {args.workers}")
         print()
     
     try:
         # Importar módulos necesarios
-        from src.core import scanner, compressor, encryptor, storage, restore
+        from src.core import scanner, compressor, storage
         from src.utils import logger
         
         # Configurar logger
         log_level = 'DEBUG' if args.verbose else 'INFO'
         logger.setup_logger(log_level)
         
-        # 1. ESCANEAR ARCHIVOS
+        # 1. ESCANEAR ARCHIVOS DE MÚLTIPLES CARPETAS
         print("Escaneando directorios...")
         files = scanner.scan_directories(args.directories, parallel=True)
         
@@ -129,10 +156,18 @@ def handle_backup(args):
             print("No se encontraron archivos para respaldar")
             return False
         
-        print(f"Encontrados {len(files)} archivos")
+        print(f"Encontrados {len(files)} archivos en {len(args.directories)} carpeta(s)")
+        if args.verbose:
+            print("Directorios escaneados:")
+            for directory in args.directories:
+                dir_files = [f for f in files if f.startswith(os.path.abspath(directory))]
+                print(f"  {directory}: {len(dir_files)} archivos")
         
-        # 2. COMPRIMIR
+        # 2. COMPRIMIR CON ENCRIPTACIÓN INTEGRADA
         print(f"Comprimiendo con {args.algorithm}...")
+        if args.encrypt:
+            print("La encriptación AES-256 se aplicará automáticamente...")
+        
         compressed_file = compressor.compress_files(
             files,
             algorithm=args.algorithm,
@@ -148,19 +183,7 @@ def handle_backup(args):
         
         print(f"Compresión completada: {compressed_file}")
         
-        # 3. ENCRIPTAR (si se solicita)
-        if args.encrypt:
-            print("Encriptando backup...")
-            encrypted_file = args.output + ".enc" if not args.output.endswith('.enc') else args.output
-            encryptor.encrypt_file(compressed_file, encrypted_file, args.password)
-            print(f"Encriptación completada: {encrypted_file}")
-            
-            # Eliminar archivo sin encriptar
-            if compressed_file != encrypted_file:
-                os.remove(compressed_file)
-                compressed_file = encrypted_file
-        
-        # 4. ALMACENAR según el modo seleccionado
+        # 3. ALMACENAR según el modo seleccionado
         if args.storage == 'local':
             # Para almacenamiento local, el archivo ya está en su destino final
             print(f"Archivo almacenado localmente: {compressed_file}")
@@ -173,9 +196,13 @@ def handle_backup(args):
         
         # Mostrar estadísticas finales
         final_size = os.path.getsize(compressed_file)
-        print(f"\nBACKUP COMPLETADO EXITOSAMENTE")
-        print(f"Archivo final: {compressed_file}")
-        print(f"Tamaño: {final_size / (1024*1024):.2f} MB")
+        print(f"\n🎉 BACKUP COMPLETADO EXITOSAMENTE")
+        print(f"📁 Carpetas respaldadas: {len(args.directories)}")
+        print(f"📄 Archivos procesados: {len(files)}")
+        print(f"📦 Archivo final: {compressed_file}")
+        print(f"💾 Tamaño: {final_size / (1024*1024):.2f} MB")
+        if args.encrypt:
+            print(f"🔒 Encriptación: AES-256 aplicada")
         
         return True
         
@@ -234,8 +261,8 @@ def handle_restore(args):
             result = restore.restore_backup(args.input, args.output_dir)
         
         if result:
-            print(f"RESTAURACIÓN COMPLETADA")
-            print(f"Archivos restaurados en: {args.output_dir}")
+            print(f"🎉 RESTAURACIÓN COMPLETADA")
+            print(f"📂 Archivos restaurados en: {args.output_dir}")
             
             # Mostrar algunos archivos restaurados
             restored_files = []
@@ -246,7 +273,7 @@ def handle_restore(args):
             if restored_files:
                 print("Algunos archivos restaurados:")
                 for file in restored_files:
-                    print(f"   {file}")
+                    print(f"   📄 {file}")
                 if len(restored_files) == 5:
                     print("   ...")
         else:
@@ -274,7 +301,7 @@ def main():
     
     # Si no hay argumentos, mostrar ayuda
     if len(sys.argv) == 1:
-        print("Sistema de Backup Seguro")
+        print("🛡️  Sistema de Backup Seguro")
         print("=" * 40)
         parser.print_help()
         return
@@ -290,8 +317,9 @@ def main():
     # Mostrar banner si es verboso
     if args.verbose:
         print("=" * 50)
-        print("SISTEMA DE BACKUP SEGURO")
-        print("   Compresión + Paralelismo con Dask")
+        print("🛡️  SISTEMA DE BACKUP SEGURO")
+        print("   📁 Múltiples Carpetas + 🔒 Encriptación AES-256")
+        print("   ⚡ Compresión + Paralelismo con Dask")
         print("=" * 50)
     
     # Ejecutar comando correspondiente

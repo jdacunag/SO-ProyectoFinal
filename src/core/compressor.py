@@ -34,6 +34,7 @@ def compress_file_zip(file_info):
 def compress_files(files, algorithm='zip', output=None, encrypt=False, password=None, workers=4):
     """
     Comprime la lista de archivos utilizando el algoritmo especificado y paralelismo con Dask
+    Con soporte completo para encriptación integrada
     """
     if not output:
         output = f"backup.{algorithm}"
@@ -52,14 +53,38 @@ def compress_files(files, algorithm='zip', output=None, encrypt=False, password=
     
     try:
         if algorithm == 'zip':
-            return compress_zip_parallel(files, str(output_path), client, encrypt, password)
+            compressed_file = compress_zip_parallel(files, str(output_path), client, encrypt, password)
         elif algorithm == 'gzip':
-            return compress_gzip_parallel(files, str(output_path), client)
+            compressed_file = compress_gzip_parallel(files, str(output_path), client)
         elif algorithm == 'bzip2':
-            return compress_bzip2_parallel(files, str(output_path), client)
+            compressed_file = compress_bzip2_parallel(files, str(output_path), client)
         else:
             logger.get_logger().error(f"Algoritmo no soportado: {algorithm}")
             return None
+        
+        # Aplicar encriptación si se solicita
+        if encrypt and password and compressed_file:
+            logger.get_logger().info("Aplicando encriptación AES-256 al archivo comprimido...")
+            from src.core import encryptor
+            
+            # Determinar nombre del archivo encriptado
+            if not output.endswith('.enc'):
+                encrypted_output = compressed_file + '.enc'
+            else:
+                encrypted_output = compressed_file
+            
+            # Encriptar el archivo comprimido
+            encryptor.encrypt_file(compressed_file, encrypted_output, password)
+            
+            # Eliminar archivo sin encriptar si es diferente
+            if compressed_file != encrypted_output:
+                os.remove(compressed_file)
+                logger.get_logger().info(f"Archivo sin encriptar eliminado: {compressed_file}")
+            
+            logger.get_logger().info(f"Encriptación completada: {encrypted_output}")
+            return encrypted_output
+        
+        return compressed_file
             
     finally:
         # Cerrar el cliente Dask
