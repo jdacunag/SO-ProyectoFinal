@@ -50,4 +50,5 @@ def scan_directories(directories, parallel=True):
             all_files.extend(scan_directory(directory))
     
     logger.get_logger().info(f"Total de archivos encontrados: {len(all_files)}")
+    
     return all_files

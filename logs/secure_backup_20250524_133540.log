@@ -1,0 +1,8 @@
+2025-05-24 13:35:41,055 - secure_backup - INFO - Total de archivos encontrados: 2
+2025-05-24 13:35:41,057 - secure_backup - INFO - Comprimiendo 2 archivos con zip
+2025-05-24 13:35:41,058 - secure_backup - INFO - Archivo de salida: /tmp/backup_temp_m03kb8j0/backup_temp.zip
+2025-05-24 13:35:41,128 - secure_backup - INFO - Directorio base para rutas relativas: /home/jdacunag/soperativos/SO-ProyectoFinal/SO-ProyectoFinal/test_data/docs
+2025-05-24 13:35:41,129 - secure_backup - INFO - Compresión ZIP completada: /tmp/backup_temp_m03kb8j0/backup_temp.zip
+2025-05-24 13:35:41,157 - secure_backup - INFO - Almacenando archivo en destino local: ./backups/backup.zip
+2025-05-24 13:35:41,160 - secure_backup - INFO - 💾 Detectado almacenamiento externo: Dispositivo: /dev/sdc
+2025-05-24 13:35:41,161 - secure_backup - INFO - ✅ Archivo almacenado y verificado: backups/backup.zip

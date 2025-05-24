@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Sistema de Backup Seguro - Interfaz de Línea de Comandos
-MEJORADO: Crea carpetas organizadas con información del backup
+CORREGIDO: Cálculo correcto de final_size para todos los modos
 """
 
 import argparse
@@ -274,7 +274,8 @@ def show_storage_info(args, backup_folder=None):
 def handle_backup(args):
     """Maneja el comando backup con carpetas organizadas"""
     
-    print("Iniciando proceso de backup...")
+    print("\033[1mIniciando proceso de backup...\033[0m")
+    print("----------------------------------------------------------------------------------------")
     
     # Validar directorios
     if not validate_directories(args.directories):
@@ -316,13 +317,14 @@ def handle_backup(args):
         backup_folder = None
     
     # Mostrar información
-    if args.verbose:
-        print(f"Directorios a respaldar: {', '.join(args.directories)}")
-        print(f"Algoritmo: {args.algorithm}")
-        print(f"Encriptación: {'SI (AES-256)' if args.encrypt else 'NO'}")
-        print(f"Workers: {args.workers}")
-        show_storage_info(args, backup_folder)
-        print()
+    
+    print(f"Directorios a respaldar: {', '.join(args.directories)}")
+    print(f"Algoritmo: {args.algorithm}")
+    print(f"Encriptación: {'SI (AES-256)' if args.encrypt else 'NO'}")
+    print(f"Workers: {args.workers}")
+    print("")
+    show_storage_info(args, backup_folder)
+    print("----------------------------------------------------------------------------------------")
     
     try:
         # Importar módulos necesarios
@@ -335,13 +337,16 @@ def handle_backup(args):
         
         # 1. ESCANEAR ARCHIVOS
         print("Escaneando directorios...")
+        print("")
         files = scanner.scan_directories(args.directories, parallel=True)
         
         if not files:
             print("No se encontraron archivos para respaldar")
             return False
         
-        print(f"Encontrados {len(files)} archivos en {len(args.directories)} carpeta(s)")
+        print("")
+        print(f"🔍 Encontrados {len(files)} archivos en {len(args.directories)} carpeta(s)")
+        print("----------------------------------------------------------------------------------------")
         if args.verbose:
             print("Directorios escaneados:")
             for directory in args.directories:
@@ -358,7 +363,9 @@ def handle_backup(args):
             temp_output = actual_output
         
         # 3. COMPRIMIR
-        print(f"Comprimiendo con {args.algorithm}...")
+        print(f"📩 Comprimiendo con {args.algorithm}...")
+        print("")
+        
         if args.encrypt:
             print("La encriptación AES-256 se aplicará automáticamente...")
         
@@ -375,10 +382,14 @@ def handle_backup(args):
             print("Error durante la compresión")
             return False
         
+        print("")
         print(f"Compresión completada: {compressed_file}")
+        print("----------------------------------------------------------------------------------------")
         
         # 4. ALMACENAR según el modo
         final_result = None
+        print("💽 Iniciando almacenamiento...")
+        print("")
         
         if args.storage == 'local':
             # Para local, mover desde temporal al destino final
@@ -396,7 +407,9 @@ def handle_backup(args):
             else:
                 final_result = str(final_output_path)
             
+            print("")
             print(f"✅ Archivo almacenado localmente: {final_result}")
+            print("----------------------------------------------------------------------------------------")
             
         elif args.storage == 'cloud':
             print(f"Subiendo a {args.cloud_service}...")
@@ -411,6 +424,7 @@ def handle_backup(args):
                 credentials=credentials,
                 folder_name=args.cloud_folder
             )
+            print("----------------------------------------------------------------------------------------")
             print(f"✅ Archivo subido a la nube: {final_result}")
             
         elif args.storage == 'fragments':
@@ -423,26 +437,82 @@ def handle_backup(args):
                 args.fragment_size,
                 str(fragments_dir)
             )
+            print("----------------------------------------------------------------------------------------")
             print(f"✅ Archivo fragmentado: {final_result}")
         
-        # Mostrar estadísticas finales
-        if args.storage != 'fragments':
+        # Mostrar estadísticas finales - SECCIÓN CORREGIDA
+        final_size = 0
+        
+        if args.storage == 'local':
             try:
-                if args.storage == 'local':
-                    final_size = os.path.getsize(final_result)
-                else:
+                # Para almacenamiento local, usar el tamaño del archivo final
+                final_size = os.path.getsize(final_result)
+                if args.verbose:
+                    print(f"   🔍 Debug local: Archivo {final_result}, Tamaño: {final_size} bytes")
+            except Exception as e:
+                if args.verbose:
+                    print(f"   ⚠️  Error obteniendo tamaño local: {e}")
+                # Fallback: usar archivo comprimido
+                try:
                     final_size = os.path.getsize(compressed_file)
-            except:
-                final_size = 0
-        else:
-            # Para fragmentos, calcular tamaño total
+                    if args.verbose:
+                        print(f"   🔍 Fallback: Usando archivo comprimido: {final_size} bytes")
+                except:
+                    final_size = 0
+        
+        elif args.storage == 'cloud':
             try:
-                fragment_dir = Path(final_result)
-                final_size = sum(f.stat().st_size for f in fragment_dir.rglob('*.part*'))
-            except:
+                # Para nube, usar el tamaño del archivo comprimido antes de subir
+                final_size = os.path.getsize(compressed_file)
+                if args.verbose:
+                    print(f"   🔍 Debug nube: Archivo comprimido {compressed_file}, Tamaño: {final_size} bytes")
+            except Exception as e:
+                if args.verbose:
+                    print(f"   ⚠️  Error obteniendo tamaño de nube: {e}")
                 final_size = 0
         
-        print(f"\n🎉 BACKUP COMPLETADO EXITOSAMENTE")
+        elif args.storage == 'fragments':
+            try:
+                # Para fragmentos, calcular tamaño total de todos los fragmentos
+                fragments_path = Path(final_result)
+                
+                # Buscar archivos .part* en el directorio de fragmentos
+                fragment_files = list(fragments_path.glob('*.part*'))
+                
+                if fragment_files:
+                    final_size = sum(f.stat().st_size for f in fragment_files)
+                    if args.verbose:
+                        print(f"   🔍 Debug fragmentos:")
+                        print(f"      Directorio: {fragments_path}")
+                        print(f"      Fragmentos encontrados: {len(fragment_files)}")
+                        for frag in fragment_files:
+                            size_mb = frag.stat().st_size / (1024*1024)
+                            print(f"         {frag.name}: {size_mb:.2f} MB")
+                        print(f"      Tamaño total: {final_size} bytes")
+                else:
+                    # Si no hay fragmentos, usar el archivo comprimido original
+                    final_size = os.path.getsize(compressed_file)
+                    if args.verbose:
+                        print(f"   ⚠️  No se encontraron fragmentos, usando archivo comprimido: {final_size} bytes")
+                
+            except Exception as e:
+                if args.verbose:
+                    print(f"   ⚠️  Error calculando tamaño de fragmentos: {e}")
+                    print(f"      final_result: {final_result}")
+                    print(f"      compressed_file: {compressed_file}")
+                try:
+                    # Fallback: usar tamaño del archivo comprimido
+                    final_size = os.path.getsize(compressed_file)
+                    if args.verbose:
+                        print(f"   🔍 Fallback fragmentos: {final_size} bytes")
+                except Exception as e2:
+                    if args.verbose:
+                        print(f"   ❌ Fallback también falló: {e2}")
+                    final_size = 0
+        
+        print(f"\n\033[1m🎉 BACKUP COMPLETADO EXITOSAMENTE\033[0m")
+        print("")
+
         print(f"📁 Carpetas respaldadas: {len(args.directories)}")
         print(f"📄 Archivos procesados: {len(files)}")
         
@@ -454,8 +524,14 @@ def handle_backup(args):
             print(f"📁 Carpeta de backup: {backup_folder}")
             print(f"🧩 Fragmentos en: {final_result}")
         
-        if final_size > 0:
-            print(f"💾 Tamaño: {final_size / (1024*1024):.2f} MB")
+        # MOSTRAR TAMAÑO SIEMPRE (no solo si > 0)
+        # MOSTRAR TAMAÑO CON UNIDADES APROPIADAS
+        if final_size >= 1024 * 1024:  # >= 1 MB
+           print(f"💾 Tamaño: {final_size / (1024*1024):.2f} MB")
+        elif final_size >= 1024:  # >= 1 KB
+           print(f"💾 Tamaño: {final_size / 1024:.2f} KB")
+        else:  # < 1 KB
+           print(f"💾 Tamaño: {final_size} bytes")
         
         if args.encrypt:
             print(f"🔒 Encriptación: AES-256 aplicada")

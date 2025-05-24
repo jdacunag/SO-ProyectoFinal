@@ -255,11 +255,13 @@ def _simulate_cloud_upload(source_file, service_name):
     upload_path = f"{service_name}://backups/{filename}"
     
     print(f"☁️  SIMULACIÓN: Archivo subido a {service_name}")
+    print("----------------------------------------------------------------------------------------")
     print(f"   📁 Ruta: {upload_path}")
     print(f"   📏 Tamaño: {file_size/1024/1024:.2f}MB")
     print(f"   ⏱️  Tiempo: {upload_time:.1f}s")
     print(f"   🔗 URL: https://{service_name}.com/file/{filename}")
     
+    print("----------------------------------------------------------------------------------------")
     logger.get_logger().info(f"Simulación completada: {upload_path}")
     return upload_path
 

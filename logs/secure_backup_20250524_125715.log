@@ -1,0 +1,11 @@
+2025-05-24 12:57:15,719 - secure_backup - INFO - Escaneando directorio: test_data/docs
+2025-05-24 12:57:15,719 - secure_backup - INFO - Encontrados 2 archivos en test_data/docs
+2025-05-24 12:57:15,768 - secure_backup - INFO - Total de archivos encontrados: 2
+2025-05-24 12:57:15,768 - secure_backup - INFO - Comprimiendo 2 archivos con zip
+2025-05-24 12:57:15,769 - secure_backup - INFO - Archivo de salida: /home/jdacunag/soperativos/SO-ProyectoFinal/SO-ProyectoFinal/backup.zip
+2025-05-24 12:57:15,813 - secure_backup - INFO - Directorio base para rutas relativas: /home/jdacunag/soperativos/SO-ProyectoFinal/SO-ProyectoFinal/test_data/docs
+2025-05-24 12:57:15,816 - secure_backup - INFO - Compresión ZIP completada: /home/jdacunag/soperativos/SO-ProyectoFinal/SO-ProyectoFinal/backup.zip
+2025-05-24 12:57:15,830 - secure_backup - INFO - Almacenando archivo en la nube usando gdrive
+2025-05-24 12:57:15,831 - secure_backup - WARNING - Módulo de nube no disponible, usando simulación
+2025-05-24 12:57:15,831 - secure_backup - INFO - Simulando subida a gdrive...
+2025-05-24 12:57:15,831 - secure_backup - INFO - Simulación completada: gdrive://backups/backup.zip
