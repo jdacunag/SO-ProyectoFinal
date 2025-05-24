@@ -1,7 +1,3 @@
-"""
-Scanner - Módulo para escanear directorios y encontrar archivos
-"""
-
 import os
 import dask.bag as db
 from pathlib import Path

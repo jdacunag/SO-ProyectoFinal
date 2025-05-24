@@ -1,0 +1,9 @@
+2025-05-24 17:48:13,902 - secure_backup - INFO - Total de archivos encontrados: 2
+2025-05-24 17:48:13,905 - secure_backup - INFO - Modo fragmentación detectado. Usando archivo temporal: /tmp/backup_compress_f57c_9m9/backup.zip
+2025-05-24 17:48:13,905 - secure_backup - INFO - Comprimiendo 2 archivos con zip
+2025-05-24 17:48:13,905 - secure_backup - INFO - Archivo de salida: /tmp/backup_compress_f57c_9m9/backup.zip
+2025-05-24 17:48:14,096 - secure_backup - INFO - Directorio base para rutas relativas: /home/jdacunag/soperativos/SO-ProyectoFinal/SO-ProyectoFinal/test_data/docs
+2025-05-24 17:48:14,101 - secure_backup - INFO - Compresión ZIP completada: /tmp/backup_compress_f57c_9m9/backup.zip
+2025-05-24 17:48:14,159 - secure_backup - INFO - Dividiendo archivo en 1 fragmentos de 500 MB
+2025-05-24 17:48:14,884 - secure_backup - ERROR - Error creando scripts de reconstrucción: 'charmap' codec can't encode character '\u274c' in position 300: character maps to <undefined>
+2025-05-24 17:48:14,885 - secure_backup - INFO - ✅ Archivo fragmentado en 1 fragmentos en: backups/backup_fragments_4/fragments

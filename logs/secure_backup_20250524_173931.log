@@ -1,0 +1,3 @@
+2025-05-24 17:39:31,481 - secure_backup - INFO - Restaurando backup desde: backups/backup.zip
+2025-05-24 17:39:31,482 - secure_backup - INFO - Restaurando archivo ZIP: backups/backup.zip
+2025-05-24 17:39:31,489 - secure_backup - INFO - Backup ZIP restaurado en: restored/restored1

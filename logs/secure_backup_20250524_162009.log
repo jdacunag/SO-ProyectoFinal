@@ -1,0 +1,10 @@
+2025-05-24 16:20:09,802 - secure_backup - INFO - Escaneando directorio: test_data/TEIS
+2025-05-24 16:20:10,445 - secure_backup - INFO - Encontrados 50621 archivos en test_data/TEIS
+2025-05-24 16:20:10,861 - secure_backup - INFO - Total de archivos encontrados: 50621
+2025-05-24 16:20:16,399 - secure_backup - INFO - Comprimiendo 50621 archivos con zip
+2025-05-24 16:20:16,399 - secure_backup - INFO - Archivo de salida: /tmp/backup_temp_omkwkt2h/backup_temp.zip
+2025-05-24 16:20:27,144 - secure_backup - INFO - Directorio base para rutas relativas: /home/jdacunag/soperativos/SO-ProyectoFinal/SO-ProyectoFinal/test_data/TEIS
+2025-05-24 16:22:43,363 - secure_backup - INFO - Compresión ZIP completada: /tmp/backup_temp_omkwkt2h/backup_temp.zip
+2025-05-24 16:22:43,674 - secure_backup - INFO - Almacenando archivo en destino local: ./backups/PRUEBAXL.zip
+2025-05-24 16:22:43,729 - secure_backup - INFO - 💾 Detectado almacenamiento externo: Dispositivo: /dev/sdc
+2025-05-24 16:23:00,049 - secure_backup - INFO - ✅ Archivo almacenado y verificado: backups/PRUEBAXL.zip

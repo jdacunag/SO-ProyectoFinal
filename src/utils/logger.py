@@ -1,7 +1,3 @@
-"""
-Logger - Sistema de logging para el sistema de backup
-"""
-
 import logging
 import os
 import sys

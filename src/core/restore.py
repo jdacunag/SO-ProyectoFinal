@@ -1,7 +1,3 @@
-"""
-Restore - Módulo para restaurar backups comprimidos/encriptados
-"""
-
 import os
 import zipfile
 import gzip

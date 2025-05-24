@@ -1,8 +1,3 @@
-"""
-Rebuild Generator - Módulo para generar scripts de reconstrucción de fragmentos
-src/utils/rebuild_generator.py
-"""
-
 import os
 import json
 from pathlib import Path

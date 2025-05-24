@@ -1,8 +1,3 @@
-"""
-Compressor - Módulo para comprimir archivos usando algoritmos clásicos con paralelismo
-ACTUALIZADO: Manejo correcto de fragmentación y rutas
-"""
-
 import os
 import tempfile
 from pathlib import Path

@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Sistema de Backup Seguro - Interfaz de Línea de Comandos
-CORREGIDO: Cálculo correcto de final_size para todos los modos
-"""
-
 import argparse
 import sys
 import os
@@ -13,62 +7,270 @@ from pathlib import Path
 from datetime import datetime
 
 def create_parser():
-    """Crea el parser principal con comandos completos"""
+    """Crea el parser principal con información detallada del sistema"""
     
+    # Descripción principal del sistema
+    main_description = """
+🛡️  SISTEMA DE BACKUP SEGURO 
+=====================================
+
+Un sistema completo de respaldo con encriptación AES-256, compresión avanzada 
+y múltiples opciones de almacenamiento.
+------------------------------------------------------------------------------------------------------------------------
+🔥 CARACTERÍSTICAS PRINCIPALES:
+   📁 Respaldo de múltiples carpetas simultáneamente
+   🔒 Encriptación AES-256 de grado militar  
+   📦 Compresión con algoritmos ZIP, GZIP y BZIP2
+   ⚡ Procesamiento paralelo con Dask para máximo rendimiento
+   💾 Almacenamiento local para discos externos
+   🧩 Fragmentación automática para distribución en USBs
+   ☁️  Integración con Google Drive y Dropbox
+   📋 Generación automática de informes de respaldo
+   🔄 Sistema completo de restauración
+------------------------------------------------------------------------------------------------------------------------
+🎯 CASOS DE USO TÍPICOS:
+   • Respaldo completo del sistema antes de actualizaciones críticas
+   • Migración segura de datos entre computadoras
+   • Archivo a largo plazo de proyectos y documentos importantes
+   • Distribución de backups grandes en múltiples dispositivos USB
+   • Sincronización automática con servicios en la nube
+   • Backup empresarial con fragmentación y encriptación
+------------------------------------------------------------------------------------------------------------------------   
+   """
+
+    # Ejemplos detallados por categoría
+    examples_section = """
+📚 EJEMPLOS DE USO COMPLETOS:
+
+-----------------------------------------------------------------------------------------------------------------------
+🔹 RESPALDO BÁSICO LOCAL:
+   python -m src.main backup -d ./documentos -o ./backupz/backup_docs.zip 
+
+   python -m src.main backup -d ./documentos -o ./backupz/backup_docs (Esto creará una carpeta y dentro estará el .zip)
+------------------------------------------------------------------------------------------------------------------------
+🔹 RESPALDO CON ENCRIPTACIÓN:
+   python -m src.main backup -d ./privado -o backup_seguro.zip.enc -e
+
+   python -m src.main backup -d ./empresa -o datos_empresa.enc -e --password mi_clave_secreta
+------------------------------------------------------------------------------------------------------------------------
+🔹 FRAGMENTACIÓN PARA USB (Recomendado para backups grandes):
+   python -m src.main -d ./sistema -o backup -s fragments --fragment-size 500
+   
+   python -m src.main -d ./multimedia -o backup -s fragments --fragment-size 1000 -e (Con encriptación)
+
+   cd backups/carpeta_archivos_fragmentados 
+   python rebuild.py (para volverlo un .zip)
+------------------------------------------------------------------------------------------------------------------------
+🔹 ALMACENAMIENTO EN LA NUBE:
+   python -m src.main backup -d ./documentos -o backup.zip -s cloud --cloud-service gdrive
+
+   python -m src.main backup -d ./proyectos -o backup.zip -s cloud --cloud-service dropbox --cloud-folder "Backups/2025"
+------------------------------------------------------------------------------------------------------------------------
+🔹 CONFIGURACIÓN AVANZADA:
+   python -m src.main backup -d ./src ./docs ./tests -o proyecto_completo.bz2 -a bzip2 -e --workers 8 -v
+
+   python -m src.main backup -d ./datos -o backup -s fragments --fragment-size 750 -e --workers 6
+------------------------------------------------------------------------------------------------------------------------
+🔹 RESTAURACIÓN:
+   python -m src.main restore -i backup_docs.zip -o ./restaurado
+
+   python -m src.main restore -i backup_seguro.zip.enc -o ./restaurado --password mi_clave_secreta
+------------------------------------------------------------------------------------------------------------------------
+⚡ OPTIMIZACIÓN DE RENDIMIENTO:
+
+   • Use --workers para ajustar el paralelismo (default: 4, recomendado: 4-8)
+   • Para SSD rápidos: hasta 8 workers
+   • Para HDD tradicionales: 2-4 workers
+   • Para fragmentación: ajuste fragment-size según capacidad de USB
+------------------------------------------------------------------------------------------------------------------------
+❗ Para más información sobre los comandos de "backup" y "restore" puedes ingresar:
+
+   python -m src.main backup --help
+
+   python -m src.main restore --help
+------------------------------------------------------------------------------------------------------------------------
+"""
+
     parser = argparse.ArgumentParser(
         prog='secure-backup',
-        description='Sistema de Backup Seguro con paralelismo usando Dask',
-        epilog='Ejemplos:\n'
-               '  %(prog)s backup -d ./docs -o backup.zip\n'
-               '  %(prog)s backup -d ./docs -o backup -s fragments --fragment-size 500\n'
-               '  %(prog)s backup -d ./docs -o backup.zip -s cloud --cloud-service gdrive\n'
-               '  %(prog)s backup -d ./docs ./fotos -o backup.zip.enc -e\n'
-               '  %(prog)s restore -i backup.zip -o ./restaurado\n',
+        description=main_description,
+        epilog=examples_section,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        add_help=False  # Deshabilitamos help por defecto para personalizarlo
+    )
+    
+    # OPCIONES GLOBALES ORGANIZADAS
+    global_group = parser.add_argument_group(
+        title="🌐 OPCIONES GLOBALES",
+        description="Configuraciones que aplican a todos los comandos"
+    )
+    
+    global_group.add_argument('-h', '--help', action='help',
+                             help='Mostrar esta ayuda completa y salir')
+    global_group.add_argument('-v', '--verbose', action='store_true',
+                             help='Activar modo detallado con información de depuración')
+    global_group.add_argument('--workers', type=int, default=4, metavar='N',
+                             help='Número de procesos paralelos (1-16, default: 4)\n'
+                                  'Recomendado: SSD=6-8, HDD=2-4, USB=1-2')
+    
+    # SUBCOMANDOS
+    subparsers = parser.add_subparsers(
+        dest='command',
+        title="🎯 COMANDOS DISPONIBLES",
+        description="Selecciona la operación que deseas realizar",
+        help="Usa 'comando --help' para ayuda específica"
+    )
+    
+    # ==================== COMANDO BACKUP ====================
+    backup_parser = subparsers.add_parser(
+        'backup',
+        help='Crear un respaldo completo y seguro',
+        description="""
+🔐 COMANDO BACKUP - Creación de Respaldos Seguros
+================================================
+
+Crea respaldos completos con encriptación, compresión y múltiples opciones
+de almacenamiento. Ideal para proteger datos importantes y facilitar
+migraciones de sistema.
+""",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
-    # Opciones globales
-    parser.add_argument('-v', '--verbose', action='store_true',
-                       help='Mostrar información detallada')
-    parser.add_argument('--workers', type=int, default=4,
-                       help='Número de workers para paralelismo (default: 4)')
+    # Argumentos requeridos para backup
+    required_backup = backup_parser.add_argument_group(
+        title="📁 DIRECTORIOS Y SALIDA (Requeridos)",
+        description="Especifica qué respaldar y dónde guardarlo"
+    )
     
-    # Subcomandos
-    subparsers = parser.add_subparsers(dest='command', help='Comandos disponibles')
+    required_backup.add_argument('-d', '--directories', nargs='+', required=True,
+                                metavar='DIR',
+                                help='Uno o más directorios para respaldar\n'
+                                     'Ejemplos: -d ./docs\n'
+                                     '          -d ./fotos ./videos ./documentos\n'
+                                     '          -d /home/usuario/proyectos')
     
-    # COMANDO BACKUP
-    backup_parser = subparsers.add_parser('backup', help='Crear un backup')
-    backup_parser.add_argument('-d', '--directories', nargs='+', required=True,
-                              help='Directorios a incluir en el backup (múltiples carpetas soportadas)')
-    backup_parser.add_argument('-o', '--output', required=True,
-                              help='Archivo/directorio de salida')
-    backup_parser.add_argument('-a', '--algorithm', choices=['zip', 'gzip', 'bzip2'],
-                              default='zip', help='Algoritmo de compresión')
-    backup_parser.add_argument('-e', '--encrypt', action='store_true',
-                              help='Encriptar el backup con AES-256')
-    backup_parser.add_argument('--password', help='Contraseña para encriptación')
+    required_backup.add_argument('-o', '--output', required=True, metavar='ARCHIVO',
+                                help='Archivo o directorio de salida\n'
+                                     'Para local: backup.zip, datos.tar.gz\n'
+                                     'Para fragmentos: directorio_base\n'
+                                     'Para encriptación: archivo.enc')
     
-    # OPCIONES DE ALMACENAMIENTO
-    backup_parser.add_argument('-s', '--storage', choices=['local', 'cloud', 'fragments'],
-                              default='local', help='Modo de almacenamiento')
+    # Opciones de compresión
+    compression_group = backup_parser.add_argument_group(
+        title="📦 COMPRESIÓN",
+        description="Algoritmos de compresión disponibles"
+    )
     
-    # Opciones para almacenamiento en la nube
-    backup_parser.add_argument('--cloud-service', choices=['gdrive', 'dropbox'],
-                              help='Servicio de nube (requerido cuando -s cloud)')
-    backup_parser.add_argument('--cloud-folder', 
-                              help='Carpeta en la nube (opcional)')
+    compression_group.add_argument('-a', '--algorithm', 
+                                  choices=['zip', 'gzip', 'bzip2'],
+                                  default='zip', metavar='ALG',
+                                  help='Algoritmo de compresión:\n'
+                                       '• zip    - Rápido, compatible (default)\n'
+                                       '• gzip   - Buena compresión, estándar\n'
+                                       '• bzip2  - Máxima compresión, más lento')
     
-    # Opciones para fragmentación
-    backup_parser.add_argument('--fragment-size', type=int, default=1024,
-                              help='Tamaño de fragmentos en MB (default: 1024)')
+    # Opciones de seguridad
+    security_group = backup_parser.add_argument_group(
+        title="🔒 SEGURIDAD Y ENCRIPTACIÓN",
+        description="Protección avanzada de datos"
+    )
     
-    # COMANDO RESTORE
-    restore_parser = subparsers.add_parser('restore', help='Restaurar un backup')
-    restore_parser.add_argument('-i', '--input', required=True,
-                               help='Archivo de backup a restaurar')
-    restore_parser.add_argument('-o', '--output-dir', required=True,
-                               help='Directorio donde restaurar')
-    restore_parser.add_argument('--password', help='Contraseña para desencriptar')
+    security_group.add_argument('-e', '--encrypt', action='store_true',
+                               help='Activar encriptación AES-256\n'
+                                    'Protege tu backup con contraseña segura\n'
+                                    'Se solicitará contraseña interactivamente')
+    
+    security_group.add_argument('--password', metavar='PASS',
+                               help='Contraseña para encriptación (no recomendado)\n'
+                                    'Mejor práctica: omitir para ingreso interactivo\n'
+                                    'Mínimo 8 caracteres requeridos')
+    
+    # Opciones de almacenamiento
+    storage_group = backup_parser.add_argument_group(
+        title="💾 MODOS DE ALMACENAMIENTO",
+        description="Diferentes estrategias para guardar tu backup"
+    )
+    
+    storage_group.add_argument('-s', '--storage', 
+                              choices=['local', 'cloud', 'fragments'],
+                              default='local', metavar='MODO',
+                              help='Modo de almacenamiento:\n'
+                                   '• local     - Archivo único (default)\n'
+                                   '• cloud     - Subir a Google Drive/Dropbox\n'
+                                   '• fragments - Dividir en partes para USB')
+    
+    # Opciones específicas para la nube
+    cloud_group = backup_parser.add_argument_group(
+        title="☁️  CONFIGURACIÓN DE NUBE",
+        description="Opciones para almacenamiento en servicios cloud"
+    )
+    
+    cloud_group.add_argument('--cloud-service', 
+                            choices=['gdrive', 'dropbox'], metavar='SERVICIO',
+                            help='Servicio de nube (REQUERIDO con -s cloud):\n'
+                                 '• gdrive  - Google Drive\n'
+                                 '• dropbox - Dropbox')
+    
+    cloud_group.add_argument('--cloud-folder', metavar='CARPETA',
+                            help='Carpeta destino en la nube\n'
+                                 'Ejemplos: "Backups", "Backups/2025"\n'
+                                 'Si no existe, se creará automáticamente')
+    
+    # Opciones de fragmentación
+    fragment_group = backup_parser.add_argument_group(
+        title="🧩 CONFIGURACIÓN DE FRAGMENTOS",
+        description="División de backups para distribución en múltiples dispositivos"
+    )
+    
+    fragment_group.add_argument('--fragment-size', type=int, default=1024, 
+                               metavar='MB',
+                               help='Tamaño de cada fragmento en MB (default: 1024)\n'
+                                    'Tamaños recomendados:\n'
+                                    '• USB 1GB  : 900 MB\n'
+                                    '• USB 2GB  : 1900 MB\n'
+                                    '• USB 4GB  : 3800 MB\n'
+                                    '• USB 8GB  : 7500 MB')
+    
+    # ==================== COMANDO RESTORE ====================
+    restore_parser = subparsers.add_parser(
+        'restore',
+        help='Restaurar un backup existente',
+        description="""
+🔄 COMANDO RESTORE - Restauración de Respaldos
+==============================================
+
+Restaura backups creados con este sistema, incluyendo archivos encriptados
+y fragmentados. Mantiene la estructura original de directorios y archivos.
+""",
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    
+    # Argumentos requeridos para restore
+    required_restore = restore_parser.add_argument_group(
+        title="📂 ARCHIVOS Y DESTINO (Requeridos)",
+        description="Especifica qué restaurar y dónde"
+    )
+    
+    required_restore.add_argument('-i', '--input', required=True, metavar='ARCHIVO',
+                                 help='Archivo de backup a restaurar\n'
+                                      'Soporta: .zip, .tar.gz, .bz2, .enc\n'
+                                      'Para fragmentos: usar rebuild.py primero')
+    
+    required_restore.add_argument('-o', '--output-dir', required=True, metavar='DIR',
+                                 help='Directorio donde restaurar los archivos\n'
+                                      'Se creará si no existe\n'
+                                      'Estructura original se preservará')
+    
+    # Opciones de seguridad para restore
+    restore_security = restore_parser.add_argument_group(
+        title="🔓 DESENCRIPTACIÓN",
+        description="Opciones para archivos encriptados"
+    )
+    
+    restore_security.add_argument('--password', metavar='PASS',
+                                 help='Contraseña para desencriptar\n'
+                                      'Requerido para archivos .enc\n'
+                                      'Se solicitará interactivamente si no se proporciona')
     
     return parser
 
@@ -309,6 +511,7 @@ def handle_backup(args):
             args.storage, args.encrypt, args.fragment_size
         )
         print(f"📋 Información del backup: {info_file}")
+        print("----------------------------------------------------------------------------------------")
         
         # Ajustar la salida para usar la nueva carpeta
         actual_output = backup_folder / "backup"
@@ -319,6 +522,7 @@ def handle_backup(args):
     # Mostrar información
     
     print(f"Directorios a respaldar: {', '.join(args.directories)}")
+    print("")
     print(f"Algoritmo: {args.algorithm}")
     print(f"Encriptación: {'SI (AES-256)' if args.encrypt else 'NO'}")
     print(f"Workers: {args.workers}")
@@ -577,7 +781,8 @@ def show_next_steps(args, result, backup_folder=None):
 def handle_restore(args):
     """Maneja el comando restore"""
     
-    print("Iniciando proceso de restauración...")
+    print("🔃 Iniciando proceso de restauración...")
+    print("----------------------------------------------------------------------------------------")
     
     # Validar archivo de entrada
     if not os.path.exists(args.input):
@@ -603,7 +808,7 @@ def handle_restore(args):
         # Configurar logger
         log_level = 'DEBUG' if args.verbose else 'INFO'
         logger.setup_logger(log_level)
-        
+        print("")
         print("Restaurando backup...")
         
         # Solicitar contraseña si el archivo parece encriptado
@@ -617,7 +822,9 @@ def handle_restore(args):
             result = restore.restore_backup(args.input, args.output_dir)
         
         if result:
+            print("----------------------------------------------------------------------------------------")
             print(f"🎉 RESTAURACIÓN COMPLETADA")
+            print("")
             print(f"📂 Archivos restaurados en: {args.output_dir}")
             
             # Mostrar algunos archivos restaurados
