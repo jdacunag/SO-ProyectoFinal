@@ -13,6 +13,12 @@ Un sistema completo de backup con compresión, encriptación y paralelización d
 *  Verónica Zapata Vargas
 *  Juan Diego Acuña Giraldo
 
+## 🎥 Vídeo de Sustentación
+El vídeo de la sustentación del proyecto se encuentra adjunto en el repositorio.
+
+## 📋 Documento Técnico
+El documento técnico se encuentra adjunto en el repositorio como un archivo .PDF
+
 ## ⚙️ Estructura del Proyecto 
 
 ```
@@ -242,3 +248,10 @@ El sistema implementa un manejo robusto de errores mediante múltiples capas de 
 Las excepciones personalizadas (BackupError, CompressionError, EncryptionError, StorageError) proporcionan contexto específico sobre el tipo de fallo, facilitando el debugging y la recuperación. Cada módulo implementa fallback automático: si Dask falla, el sistema cambia transparentemente a procesamiento secuencial; si una operación de red falla, se reintenta con delay exponencial.
 
 El sistema de logging contextual registra todos los errores con timestamps y trazabilidad completa, mientras que la limpieza automática de archivos temporales garantiza que no queden residuos tras un error. Esta arquitectura asegura que el sistema sea resiliente y proporcione información útil para diagnóstico sin comprometer la integridad de los datos.
+
+## Conclusiones
+
+onclusiones
+El Sistema de Backup Seguro cumple exitosamente con todos los requisitos establecidos, implementando selección de múltiples carpetas con escaneo recursivo paralelo y encriptación AES-256 opcional con validación robusta. El proyecto incorpora tres algoritmos de compresión (ZIP, GZIP, BZIP2) optimizados con paralelismo Dask y una interfaz CLI completa.
+
+Los aprendizajes técnicos clave abarcan implementación práctica de paralelismo con Dask, aplicación correcta de criptografía AES-256 y PBKDF2, diseño de arquitectura modular que facilita mantenimiento, y manejo eficiente de operaciones de archivo a gran escala con gestión inteligente de recursos del sistema.
