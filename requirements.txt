@@ -1,54 +1,19 @@
-# requirements-minimal.txt
-# Dependencias mínimas para funcionalidad básica
+# Dependencias del Sistema de Backup Seguro
+# Proyecto Final - Sistemas Operativos
 
-# ===========================
-# CORE ESENCIAL
-# ===========================
-
-# Paralelismo con Dask
+# Paralelismo y computación distribuida
 dask[complete]>=2023.5.0
 distributed>=2023.5.0
 
-# Encriptación
+# Criptografía y seguridad
 cryptography>=41.0.0
 
-# Interfaz de usuario
+# Manejo de argumentos mejorado
+argparse
+
+# Utilidades de sistema
+pathlib2; python_version < '3.4'
 tqdm>=4.64.0
 
-# Configuración
-python-dotenv>=1.0.0
-
-# Configuración
-python-dotenv>=1.0.0
-
-# ===========================
-# ALMACENAMIENTO EN LA NUBE
-# ===========================
-
-# Para APIs REST (Google Drive, Dropbox)
-requests>=2.31.0
-
-# Para parsing de URLs y parámetros
-urllib3>=2.0.0
-
-# ===========================
-# DEPENDENCIAS IMPLÍCITAS
-# ===========================
-
-# NumPy (requerido por Dask)
-numpy>=1.24.0
-
-# Pandas (requerido por Dask)
-pandas>=2.0.0
-
-# ===========================
-# OPCIONALES PARA MEJORAS
-# ===========================
-
-# Para mejor detección de dispositivos USB (opcional)
-# psutil>=5.9.0
-
-# Para APIs más avanzadas de Google (opcional)
-# google-auth>=2.0.0
-# google-auth-oauthlib>=1.0.0
-# google-api-python-client>=2.0.0
+# Para desarrollo y testing
+unittest2; python_version < '3.0'
