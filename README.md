@@ -7,6 +7,42 @@
 
 Un sistema completo de backup con compresión, encriptación y paralelización desarrollado para la asignatura **Sistemas Operativos (ST0257)** de la Universidad EAFIT.
 
+## 👥 Integrantes del Equipo
+
+* David Lopera Londoño
+*  Verónica Zapata Vargas
+*  Juan Diego Acuña Giraldo
+
+## ⚙️ Estructura del Proyecto 
+
+```
+SO-ProyectoFinal/                  
+├── src/                         # Código fuente principal
+│   ├── core/                    # Módulos principales
+│   │   ├── scanner.py           # Escaneo de directorios
+│   │   ├── compressor.py        # Algoritmos de compresión
+│   │   ├── encryptor.py         # Encriptación AES-256
+│   │   ├── storage.py           # Gestión de almacenamiento
+│   │   └── restore.py           # Restauración de backups
+│   ├── utils/                   # Utilidades y helpers
+│   │   ├── logger.py            # Sistema de logging
+│   │   ├── error_handler.py     # Manejo de errores
+│   │   ├── parallel.py          # Utilidades de paralelismo
+│   │   └── rebuild_generator.py # Generación de scripts
+│   └── main.py                  # Punto de entrada principal
+├── tests/                       # Suite de testing
+│   ├── test_scanner.py          # Tests del scanner
+│   ├── test_compressor.py       # Tests del compressor
+│   └── test_requirements.py     # Tests de requisitos
+├── backups/                     # Directorio de backups
+├── restored/                    # Directorio de restauración
+├── logs/                        # Archivos de log
+├── run_tests.py                 # Ejecutor de tests
+├── test.mk                      # Makefile de testing
+├── requirements.txt             # Dependencias
+└── README.md                    # Documentación principal
+```
+
 ## 🎯 Características Principales
 
 ### 🚀 Algoritmos de Compresión Clásicos
@@ -93,6 +129,13 @@ python -m src.main backup \
     --fragment-size 1024
 ```
 
+### Rebuild de Backup Fragmentado
+
+```bash
+cd backups/backup_fragments/fragments
+
+python rebuild.py 
+```
 ### Backup a la Nube (Simulado)
 
 ```bash
@@ -118,3 +161,84 @@ python -m src.main restore \
     -o ./restaurado \
     --password mi_clave_segura
 ```
+
+## 🤖 Tests Unitarios
+
+### 🔍 Tests del Scanner (test_scanner.py)
+
+* Escaneo de directorios únicos
+* Escaneo de múltiples directorios
+* Procesamiento paralelo vs secuencial
+* Manejo de directorios inexistentes
+* Directorios vacíos
+* Archivos con nombres Unicode
+* Estructuras grandes de directorios
+
+```bash
+python# Ejemplo de test unitario
+def test_scan_single_directory(self):
+    """Prueba el escaneo de un solo directorio"""
+    files = scanner.scan_directory(self.test_dir)
+    self.assertGreater(len(files), 0)
+```
+### 🗜️ Tests del Compressor (test_compressor.py)
+
+* Compresión con algoritmos ZIP, GZIP, BZIP2
+* Archivos únicos vs múltiples archivos
+* Comparación de ratios de compresión
+* Rendimiento paralelo vs secuencial
+* Manejo de archivos grandes
+* Operaciones concurrentes
+* Manejo de errores
+
+```bash
+python# Ejemplo de test de rendimiento
+def test_parallel_vs_sequential_performance(self):
+    """Compara rendimiento paralelo vs secuencial"""
+    # Mide tiempos y calcula speedup
+```
+
+### 🚀 Ejecución de Tests
+
+##### Métodos de Ejecución
+
+**1. Script Principal**:
+
+```bash
+# Ejecutar todas las pruebas
+python run_tests.py
+
+# Ejecutar módulo específico
+python run_tests.py --module scanner
+python run_tests.py --module compressor
+
+# Solo pruebas de rendimiento
+python run_tests.py --performance
+
+# Modo verboso
+python run_tests.py --verbose
+```
+
+**2. Pipeline de Calidad con Makefile:**
+
+```bash
+# Tests básicos
+make -f test.mk test
+
+# Tests con formato y linting
+make -f test.mk quality
+
+# Solo pruebas de rendimiento
+make -f test.mk test-performance
+
+# Limpieza
+make -f test.mk clean-test
+```
+
+### ⚠️ Gestión de Errores
+
+El sistema implementa un manejo robusto de errores mediante múltiples capas de protección. Se utilizan decoradores especializados como @retry para operaciones de red con reintentos automáticos, y @safe_file_operation para operaciones de archivo que manejan errores de permisos y espacio insuficiente.
+
+Las excepciones personalizadas (BackupError, CompressionError, EncryptionError, StorageError) proporcionan contexto específico sobre el tipo de fallo, facilitando el debugging y la recuperación. Cada módulo implementa fallback automático: si Dask falla, el sistema cambia transparentemente a procesamiento secuencial; si una operación de red falla, se reintenta con delay exponencial.
+
+El sistema de logging contextual registra todos los errores con timestamps y trazabilidad completa, mientras que la limpieza automática de archivos temporales garantiza que no queden residuos tras un error. Esta arquitectura asegura que el sistema sea resiliente y proporcione información útil para diagnóstico sin comprometer la integridad de los datos.
