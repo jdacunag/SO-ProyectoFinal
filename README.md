@@ -13,7 +13,8 @@ Un sistema completo de backup con compresión, encriptación y paralelización d
 *  Verónica Zapata Vargas
 *  Juan Diego Acuña Giraldo
 
-## 🎥 Vídeo de Sustentación
+## 🎥 Vídeos de Sustentación
+https://youtu.be/17WUDs2KUno
 https://www.youtube.com/watch?v=37Ux-a6T1o8
 
 ## 📋 Documento Técnico
