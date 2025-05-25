@@ -1,0 +1,6 @@
+2025-05-25 09:50:03,538 - secure_backup - INFO - Total de archivos encontrados: 2
+2025-05-25 09:50:03,542 - secure_backup - INFO - Comprimiendo 2 archivos con zip
+2025-05-25 09:50:03,542 - secure_backup - INFO - Archivo de salida: C:\Users\juanl\AppData\Local\Temp\backup_temp_26s24zup\backup_temp.zip
+2025-05-25 09:50:03,818 - secure_backup - INFO - Directorio base para rutas relativas: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\documentos
+2025-05-25 09:50:03,821 - secure_backup - INFO - Compresión ZIP completada: C:\Users\juanl\AppData\Local\Temp\backup_temp_26s24zup\backup_temp.zip
+2025-05-25 09:50:03,846 - secure_backup - INFO - Almacenando archivo en destino local: ./backups/backup_docs.zip

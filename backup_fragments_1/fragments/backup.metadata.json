@@ -1,0 +1,15 @@
+{
+  "original_file": "C:\\Users\\juanl\\AppData\\Local\\Temp\\backup_compress_0zc85i1z\\backup.zip",
+  "file_size": 468,
+  "fragment_size": 1048576,
+  "fragment_size_mb": 1,
+  "num_fragments": 1,
+  "created_by": "Sistema de Backup Seguro v1.0",
+  "fragments": {
+    "backup.part000": {
+      "size": 468,
+      "checksum": "4f3c69b6a081bd5c4feb5cb23ad6c561",
+      "index": 0
+    }
+  }
+}

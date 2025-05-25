@@ -1,0 +1,13 @@
+2025-05-25 09:48:26,749 - secure_backup - INFO - Escaneando directorio: ./documentos
+2025-05-25 09:48:26,751 - secure_backup - INFO - Encontrados 2 archivos en ./documentos
+2025-05-25 09:48:26,837 - secure_backup - INFO - Total de archivos encontrados: 2
+2025-05-25 09:48:26,842 - secure_backup - INFO - Comprimiendo 2 archivos con zip
+2025-05-25 09:48:26,843 - secure_backup - INFO - Archivo de salida: C:\Users\juanl\AppData\Local\Temp\backup_temp_hdnp_a55\backup_temp.zip
+2025-05-25 09:48:27,126 - secure_backup - INFO - Directorio base para rutas relativas: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\documentos
+2025-05-25 09:48:27,131 - secure_backup - INFO - Compresión ZIP completada: C:\Users\juanl\AppData\Local\Temp\backup_temp_hdnp_a55\backup_temp.zip
+2025-05-25 09:48:27,131 - secure_backup - INFO - Aplicando encriptación AES-256 al archivo comprimido...
+2025-05-25 09:48:27,879 - secure_backup - INFO - Encriptando archivo: C:\Users\juanl\AppData\Local\Temp\backup_temp_hdnp_a55\backup_temp.zip
+2025-05-25 09:48:27,948 - secure_backup - INFO - Archivo encriptado guardado en: C:\Users\juanl\AppData\Local\Temp\backup_temp_hdnp_a55\backup_temp.zip.enc
+2025-05-25 09:48:27,950 - secure_backup - INFO - Archivo sin encriptar eliminado: C:\Users\juanl\AppData\Local\Temp\backup_temp_hdnp_a55\backup_temp.zip
+2025-05-25 09:48:27,950 - secure_backup - INFO - Encriptación completada: C:\Users\juanl\AppData\Local\Temp\backup_temp_hdnp_a55\backup_temp.zip.enc
+2025-05-25 09:48:27,965 - secure_backup - INFO - Almacenando archivo en destino local: ./backups/backup_seguro.zip.enc

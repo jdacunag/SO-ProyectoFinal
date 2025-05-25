@@ -1,0 +1,20 @@
+2025-05-25 10:34:57,197 - secure_backup - INFO - Total de archivos encontrados: 14
+2025-05-25 10:34:57,217 - secure_backup - INFO - Comprimiendo 14 archivos con zip
+2025-05-25 10:34:57,217 - secure_backup - INFO - Archivo de salida: C:\Users\juanl\AppData\Local\Temp\backup_temp_wj1r_mak\backup_temp.zip
+2025-05-25 10:34:57,548 - secure_backup - INFO - Directorio base para rutas relativas: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal
+2025-05-25 10:34:57,549 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\documentos\config.txt -> documentos\config.txt
+2025-05-25 10:34:57,552 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\documentos\config_sistema.txt -> documentos\config_sistema.txt
+2025-05-25 10:34:57,553 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\documentos\contactos.txt -> documentos\contactos.txt
+2025-05-25 10:34:57,553 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\documentos\notas_proyecto.md -> documentos\notas_proyecto.md
+2025-05-25 10:34:57,554 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\documentos\reporte.txt -> documentos\reporte.txt
+2025-05-25 10:34:57,555 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\documentos\reporte_anual.txt -> documentos\reporte_anual.txt
+2025-05-25 10:34:57,556 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\proyectos\compressor.py -> proyectos\compressor.py
+2025-05-25 10:34:57,557 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\proyectos\main.py -> proyectos\main.py
+2025-05-25 10:34:57,558 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\proyectos\README.md -> proyectos\README.md
+2025-05-25 10:34:57,559 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\proyectos\version.txt -> proyectos\version.txt
+2025-05-25 10:34:57,560 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\fotos\animacion.gif -> fotos\animacion.gif
+2025-05-25 10:34:57,561 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\fotos\imagen1.jpg -> fotos\imagen1.jpg
+2025-05-25 10:34:57,562 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\fotos\trabajo_screenshot.png -> fotos\trabajo_screenshot.png
+2025-05-25 10:34:57,564 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\fotos\vacaciones_2024.jpg -> fotos\vacaciones_2024.jpg
+2025-05-25 10:34:57,565 - secure_backup - INFO - Compresión ZIP completada: C:\Users\juanl\AppData\Local\Temp\backup_temp_wj1r_mak\backup_temp.zip
+2025-05-25 10:34:57,585 - secure_backup - INFO - Almacenando archivo en destino local: ./backups/backup_completo.zip

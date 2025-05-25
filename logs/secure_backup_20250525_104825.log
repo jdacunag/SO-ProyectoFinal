@@ -1,0 +1,9 @@
+2025-05-25 10:48:26,331 - secure_backup - INFO - Total de archivos encontrados: 1
+2025-05-25 10:48:26,336 - secure_backup - INFO - Modo fragmentación detectado. Usando archivo temporal: C:\Users\juanl\AppData\Local\Temp\backup_compress_0zc85i1z\backup.zip
+2025-05-25 10:48:26,337 - secure_backup - INFO - Comprimiendo 1 archivos con zip
+2025-05-25 10:48:26,337 - secure_backup - INFO - Archivo de salida: C:\Users\juanl\AppData\Local\Temp\backup_compress_0zc85i1z\backup.zip
+2025-05-25 10:48:26,592 - secure_backup - INFO - Directorio base para rutas relativas: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\archivo_grande\archivo_masivo.dat
+2025-05-25 10:48:26,598 - secure_backup - DEBUG - Agregando: C:\Users\juanl\OneDrive\Documentos\semestre 2025-1\sistemas operativos\SO-ProyectoFinal\archivo_grande\archivo_masivo.dat -> .
+2025-05-25 10:48:26,601 - secure_backup - INFO - Compresión ZIP completada: C:\Users\juanl\AppData\Local\Temp\backup_compress_0zc85i1z\backup.zip
+2025-05-25 10:48:26,624 - secure_backup - INFO - Dividiendo archivo en 1 fragmentos de 1 MB
+2025-05-25 10:48:27,320 - secure_backup - ERROR - Error creando scripts de reconstrucción: 'charmap' codec can't encode character '\u274c' in position 311: character maps to <undefined>

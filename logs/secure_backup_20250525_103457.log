@@ -1,0 +1,6 @@
+2025-05-25 10:34:57,112 - secure_backup - INFO - Escaneando directorio: ./fotos
+2025-05-25 10:34:57,113 - secure_backup - INFO - Encontrados 4 archivos en ./fotos
+2025-05-25 10:34:57,115 - secure_backup - INFO - Escaneando directorio: ./proyectos
+2025-05-25 10:34:57,115 - secure_backup - INFO - Encontrados 4 archivos en ./proyectos
+2025-05-25 10:34:57,116 - secure_backup - INFO - Escaneando directorio: ./documentos
+2025-05-25 10:34:57,116 - secure_backup - INFO - Encontrados 6 archivos en ./documentos

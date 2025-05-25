@@ -1,0 +1,8 @@
+2025-05-25 10:54:26,754 - secure_backup - INFO - Restaurando backup desde: backups\backup_seguro.zip.enc
+2025-05-25 10:54:26,755 - secure_backup - INFO - Desencriptando archivo: backups\backup_seguro.zip.enc
+2025-05-25 10:54:26,757 - secure_backup - INFO - Desencriptando archivo: backups\backup_seguro.zip.enc
+2025-05-25 10:54:28,259 - secure_backup - INFO - Archivo desencriptado guardado en: C:\Users\juanl\AppData\Local\Temp\tmpp_o13nue.zip
+2025-05-25 10:54:28,262 - secure_backup - INFO - Archivo desencriptado guardado en: C:\Users\juanl\AppData\Local\Temp\tmpp_o13nue.zip
+2025-05-25 10:54:28,264 - secure_backup - INFO - Restaurando backup desde: C:\Users\juanl\AppData\Local\Temp\tmpp_o13nue.zip
+2025-05-25 10:54:28,264 - secure_backup - INFO - Restaurando archivo ZIP: C:\Users\juanl\AppData\Local\Temp\tmpp_o13nue.zip
+2025-05-25 10:54:28,267 - secure_backup - INFO - Archivo temporal eliminado: C:\Users\juanl\AppData\Local\Temp\tmpp_o13nue.zip

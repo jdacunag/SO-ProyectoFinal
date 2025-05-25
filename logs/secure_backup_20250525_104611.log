@@ -1,0 +1,10 @@
+2025-05-25 10:46:12,303 - secure_backup - INFO - Total de archivos encontrados: 3
+2025-05-25 10:46:12,308 - secure_backup - INFO - Comprimiendo 3 archivos con bzip2
+2025-05-25 10:46:12,308 - secure_backup - INFO - Archivo de salida: C:\Users\juanl\AppData\Local\Temp\backup_temp_1_1rzy0l\backup_temp.bzip2
+2025-05-25 10:46:12,612 - secure_backup - INFO - Compresión BZIP2 completada: C:\Users\juanl\AppData\Local\Temp\backup_temp_1_1rzy0l\backup_temp.bzip2.tar.bz2
+2025-05-25 10:46:12,612 - secure_backup - INFO - Aplicando encriptación AES-256 al archivo comprimido...
+2025-05-25 10:46:12,693 - secure_backup - INFO - Encriptando archivo: C:\Users\juanl\AppData\Local\Temp\backup_temp_1_1rzy0l\backup_temp.bzip2.tar.bz2
+2025-05-25 10:46:12,802 - secure_backup - INFO - Archivo encriptado guardado en: C:\Users\juanl\AppData\Local\Temp\backup_temp_1_1rzy0l\backup_temp.bzip2.tar.bz2.enc
+2025-05-25 10:46:12,803 - secure_backup - INFO - Archivo sin encriptar eliminado: C:\Users\juanl\AppData\Local\Temp\backup_temp_1_1rzy0l\backup_temp.bzip2.tar.bz2
+2025-05-25 10:46:12,803 - secure_backup - INFO - Encriptación completada: C:\Users\juanl\AppData\Local\Temp\backup_temp_1_1rzy0l\backup_temp.bzip2.tar.bz2.enc
+2025-05-25 10:46:12,824 - secure_backup - INFO - Almacenando archivo en destino local: ./backups/backup_seguro.zip.enc
