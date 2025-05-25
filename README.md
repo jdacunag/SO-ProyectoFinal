@@ -14,7 +14,7 @@ Un sistema completo de backup con compresión, encriptación y paralelización d
 *  Juan Diego Acuña Giraldo
 
 ## 🎥 Vídeo de Sustentación
-[Video]([https://studio.youtube.com/channel/UCtVXSzYs-1U_hizjOyk7vaQ/videos/upload?filter=%5B%5D&sort=%7B"columnType"%3A"date"%2C"sortOrder"%3A"DESCENDING"%7D](https://www.youtube.com/watch?v=37Ux-a6T1o8))
+https://www.youtube.com/watch?v=37Ux-a6T1o8
 
 ## 📋 Documento Técnico
 El documento técnico se encuentra adjunto en el repositorio como un archivo .PDF
